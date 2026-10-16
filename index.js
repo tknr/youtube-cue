@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import ytdl from "ytdl-core";
+import ytdl from "@distube/ytdl-core";
 import getArtistTitle from "get-artist-title";
 import { parse } from "./src/parser.js";
 import { generate } from "./src/cue.js";
@@ -7,6 +7,7 @@ import minimist from "minimist";
 import exit from "process";
 import updateNotifier from "update-notifier";
 import pkg from "./src/package.js";
+import fs from 'fs';
 
 updateNotifier({ pkg }).notify();
 
@@ -18,7 +19,7 @@ if (argv.version) {
   console.log(pkg.version);
 } else if (argv._.length < 1 || argv.help) {
   console.log(`Usage
-    $ youtube-cue [--audio-file audio.m4a] <youtube_url> [output_file]
+    $ youtube-cue --cookie-json-file <cookie-json-file> [--audio-file audio.m4a] <youtube_url> [output_file]
 
   Options
     --help, Show help
@@ -48,7 +49,9 @@ if (argv.version) {
 } else {
   let url = argv._[0];
 
-  ytdl.getInfo(url).then((info) => {
+  const agent = ytdl.createAgent(JSON.parse(fs.readFileSync(argv["cookie-json-file"])));  
+
+  ytdl.getInfo(url , { agent }).then((info) => {
     let audioFile = argv["audio-file"]
       ? argv["audio-file"]
       : `${info.videoDetails.title}.m4a`;
