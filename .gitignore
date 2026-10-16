@@ -1,2 +1,7 @@
 node_modules/
 *.cue
+.pnp.cjs
+.pnp.loader.mjs
+.yarn/
+yarn.lock
+
